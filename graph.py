@@ -7,6 +7,9 @@ class Node:
     def __init__(self, neighbors: list["Node"] = None, value: int = None):
         self.neighbors = neighbors if neighbors is not None else []
         self.value = value
+    
+    def get_neighbors(self) -> list["Node"]:
+        return self.neighbors
 
     # Literally just an alternate constructor that generates n Nodes
     # for convenience (because I'm lazy)
@@ -17,12 +20,13 @@ class Node:
     # Link an arbitrary number of nodes.
     # This only defines a bidirectional link
     # Executing this on every node in a graph creates a complete graph
-    @staticmethod
-    def link(*nodes: "Node"):
-        for node_a in nodes:
-            for node_b in nodes:
-                if node_a is not node_b and node_b not in node_a.neighbors:
-                    node_a.neighbors.append(node_b)
+    # this is broken somehow right now, so MatrixGraph.__init__ directly accesses each node's neighbors attribute
+    # @staticmethod
+    # def link(*nodes: "Node"):
+    #     for node_a in nodes:
+    #         for node_b in nodes:
+    #             if node_a is not node_b and node_b not in node_a.neighbors:
+    #                 node_a.neighbors.append(node_b)
 
     def __str__(self):
         return f"Node {self.__hash__()}: {self.value}"
@@ -101,8 +105,21 @@ class MatrixGraph(Graph):
         nodes = Node.nodes(volume)
 
         for coord in self.possible_coords():
-            valid_neighbors = (self.add_coords(x, coord) for x in self.orth_adj_vect() if self.is_valid_coordinate(self.add_coords(x, coord)))
-            Node.link(*([nodes[self.linearize(neighbor)] for neighbor in valid_neighbors] + [nodes[self.linearize(coord)]]))
+
+            # a more opaque way of using a generator comprehension to get valid_neighbors in one line
+            #    valid_neighbors = (self.add_coords(x, coord) for x in self.orth_adj_vect() if self.is_valid_coordinate(self.add_coords(x, coord)))
+
+            possible_neighbors = [self.add_coords(coord, vect) for vect in self.orth_adj_vect()]
+            valid_neighbors = filter(self.is_valid_coordinate, possible_neighbors)
+            valid_nodes = [
+                nodes[self.linearize(coord)] for coord in valid_neighbors
+            ]
+            
+            # old broken line of code
+            #    Node.link(nodes[self.linearize(coord)], *valid_nodes)
+
+            # temporary bugfix, but it's messy. Ideally, I shouldn't be accessing Node fields directly
+            nodes[self.linearize(coord)].neighbors = valid_nodes
 
         super().__init__(*nodes)
 
