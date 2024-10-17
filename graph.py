@@ -20,6 +20,14 @@ class Node:
         return self.neighbors.copy()
 
 
+    def set_value(self, n: int):
+        self.value = n
+
+
+    def get_value(self) -> int:
+        return self.value
+
+
     @classmethod
     def nodes(cls, n: int) -> list["Node"]:
         """
