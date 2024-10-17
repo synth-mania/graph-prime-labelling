@@ -51,7 +51,8 @@ class MatrixGraph(Graph):
     
     # yeah, this is something better handled by numpy. I'll switch to that,
     # but this'll get the project off the ground
-    def add_coords(self, *coords: list[int]):
+    @staticmethod
+    def add_coords(*coords: list[int]):
         return [sum(x) for x in zip(*coords)]
     
     def is_valid_coordinate(self, coords: list[int]):
@@ -100,6 +101,7 @@ class MatrixGraph(Graph):
     def __init__(self, *dim: int):
         self.dim = list(dim)
         volume = 1
+        # noinspection PyStatementEffect
         [volume := volume * i for i in self.dim] # is there an easier way to do this? probably. is it shorter? possibly.
                                                  # but this uses the cool walrus 'assign and return' operator, so it's better.
         nodes = Node.nodes(volume)
