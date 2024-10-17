@@ -48,8 +48,7 @@ class Graph:
         """
         for node in self.nodes:
             if node.value is not None:
-                if node.value > 0:
-                    return False
+                return False
 
         return True
 
@@ -80,9 +79,8 @@ class Graph:
         for node in unoccupied_node:
             neighbor_values = (neighbor.value for neighbor in node.neighbors if neighbor.value is not None)
 
-            for value in neighbor_values:
-                if value > 0:
-                    occupied_adj_node.append(node)
+            if neighbor_values:
+                occupied_adj_node.append(node)
 
         if not occupied_adj_node:
             return None
@@ -173,7 +171,7 @@ class MatrixGraph(Graph):
 def print_2d_matrix_graph(graph: MatrixGraph):
     for i in range(graph.dim[1]):
         for j in range(graph.dim[0]):
-            value = graph.get_node([j, i]).value
-            value = "0" if value is None else str(value)
+            value = str(graph.get_node([j, i]).value)
+            # value = "0" if value is None else str(value) # now, 0 is not treated as None
             print(value + " " * (5 - len(value)), end="")
         print()
