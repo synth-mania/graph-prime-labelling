@@ -39,6 +39,7 @@ class Graph:
 
     def __init__(self, *nodes: Node):
         self.nodes = list(nodes)
+        self.size = len(nodes)
 
     def is_empty(self) -> bool:
         for node in self.nodes:
