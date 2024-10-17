@@ -42,11 +42,25 @@ class Graph:
         self.size = len(nodes)
 
     def is_empty(self) -> bool:
+        """
+            Returns boolean value indicating whether graph is empty (no nodes are labelled)
+        :return:
+        """
         for node in self.nodes:
             if node.value is not None:
                 if node.value > 0:
                     return False
 
+        return True
+
+    def is_full(self) -> bool:
+        """
+            Returns boolean value indicating whether graph is full (every node is labelled)
+        :return:
+        """
+        for node in self.nodes:
+            if node.value is None:
+                return False
         return True
 
     def nodes_by_degree(self) -> list[Node]:
