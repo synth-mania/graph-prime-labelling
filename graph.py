@@ -79,6 +79,13 @@ class Graph:
         self.nodes = list(nodes)
         self.size = len(nodes)
 
+    def get_size(self) -> int:
+        """
+            Return the number of nodes in the graph
+        :return:
+        """
+        return self.size
+
     def is_empty(self) -> bool:
         """
             Returns boolean value indicating whether graph is empty (no nodes are labelled)
