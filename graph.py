@@ -1,21 +1,47 @@
-# Class for the individual Node in a Graph
-# should not be used directly, as this representation is subject to change
-# (subclasses of graph should be handled directly)
 class Node:
+    """
+        Defines the member nodes (verticies) of a Graph
 
-    # Initializes the Node with it's value and neighbor list
+        Typically, this shouldn't be accessed directly.
+        Consider implementing functions that access Node or Node attributes as methods of Graph or a Graph subclass
+    """
+
+
     def __init__(self, neighbors: list["Node"] = None, value: int = None):
         self.neighbors = neighbors if neighbors is not None else []
         self.value = value
-    
-    def get_neighbors(self) -> list["Node"]:
-        return self.neighbors
 
-    # Literally just an alternate constructor that generates n Nodes
-    # for convenience (because I'm lazy)
+
+    def get_neighbors(self) -> list["Node"]:
+        """
+            Returns a list of a Node's neighbors
+        :return:
+        """
+        return self.neighbors.copy()
+
+
     @classmethod
     def nodes(cls, n: int) -> list["Node"]:
+        """
+            An alternate constructor that creates n Nodes
+
+            Use to simplify the initialization of Graph subclasses
+
+            Example:
+
+            def __init__(self, n: int):
+                # defines a graph subclass with n nodes
+
+                self.nodes = Node.nodes(n)
+
+                ### Insert logic to link nodes here ###
+
+                super().__init__(nodes)
+        :param n:
+        :return:
+        """
         return [cls() for _ in range(n)]
+
 
     # Link an arbitrary number of nodes.
     # This only defines a bidirectional link
@@ -29,13 +55,25 @@ class Node:
     #                 node_a.neighbors.append(node_b)
 
     def __str__(self):
+        """
+            Use in debugging if the unique identity and value of a node needs to be known
+
+            Example:
+
+            print(Node)
+        :return:
+        """
         return f"Node {self.__hash__()}: {self.value}"
 
 
-# This shouldn't be used directly to create Graph objects
-# subclasses will create the structure of that specific kind of
-# graph by linking their nodes, this class only provides shared methods.
 class Graph:
+    """
+        Defines an abstract class representing a graph (structure containing unique nodes connected by edges)
+
+        Provides methods common to all graphs.
+
+        Not meant to construct graphs directly, create subclasses instead that implement node linking logic.
+    """
 
     def __init__(self, *nodes: Node):
         self.nodes = list(nodes)
@@ -87,34 +125,54 @@ class Graph:
         return occupied_adj_node
 
 
-# Defines a graph where the nodes, if they each occupied a space on a
-# two dimensional tessellation of squares (a grid),
-# are linked to their orthagonally adjacent neighbors
 class MatrixGraph(Graph):
+    """
+        Defines a graph where the nodes, if each occupied a space on
+        an 'n' dimensional tessellation of hypercubes (a grid),
+        are linked to their orthagonally adjacent neighbors
+    """
     
     # yeah, this is something better handled by numpy. I'll switch to that,
     # but this'll get the project off the ground
     @staticmethod
     def add_coords(*coords: list[int]):
+        """
+            Perform vector addition on at least two coordinates, returning the summed vectors as a single coordinate
+        :param coords:
+        :return:
+        """
         return [sum(x) for x in zip(*coords)]
     
     def is_valid_coordinate(self, coords: list[int]):
+        """
+            Check if a given coordinate lies within the valid coordinate space of the graph
+        :param coords:
+        :return:
+        """
         for i in range(len(self.dim)):
             if coords[i] >= self.dim[i] or coords[i] < 0:
                 return False
         return True
-    
-    # yields vectors that when added to a given coordinate, represent it's orthagonally adjacent neighbors
+
+
     def orth_adj_vect(self):
+        """
+            A generator that yields a unit vector and it's inverse for every dimension in the coordinate space
+        :return:
+        """
         for i in range(len(self.dim)):
             vect = [0 for _ in range(len(self.dim))]
             vect[i] = 1
             yield vect.copy()
             vect[i] = -1
             yield vect.copy()
-    
-    # yields every possible coordinate
+
+
     def possible_coords(self):
+        """
+            A generator that yields every possible coordinate in the coordinate space
+        :return:
+        """
         vect = [0 for _ in range(len(self.dim))]
 
         while True:
@@ -131,6 +189,13 @@ class MatrixGraph(Graph):
                 return
 
     def linearize(self, coord: list[int]) -> int:
+        """
+            Maps any coordinate in the graph's coordinate space onto a one-dimensional index
+
+            Used internally by MatrixGraph to index nodes in the nodes list
+        :param coord:
+        :return:
+        """
         index = 0
         stride = 1
         for i in range(len(self.dim)):
@@ -139,36 +204,46 @@ class MatrixGraph(Graph):
         return index
     
     def get_node(self, coord: list[int]):
+        """
+            Get any node in the graph by coordinate
+        :param coord:
+        :return:
+        """
         return self.nodes[self.linearize(coord)]
 
     def __init__(self, *dim: int):
         self.dim = list(dim)
         volume = 1
+
+        # pycharm doesn't realize the := operator produces a side-effect
+        # and so thinks this list comprehension has no effect
         # noinspection PyStatementEffect
         [volume := volume * i for i in self.dim] # is there an easier way to do this? probably. is it shorter? possibly.
                                                  # but this uses the cool walrus 'assign and return' operator, so it's better.
+        # Construct every node the graph will need
         nodes = Node.nodes(volume)
+        super().__init__(*nodes)
 
         for coord in self.possible_coords():
 
-            # a more opaque way of using a generator comprehension to get valid_neighbors in one line
-            #    valid_neighbors = (self.add_coords(x, coord) for x in self.orth_adj_vect() if self.is_valid_coordinate(self.add_coords(x, coord)))
-
             possible_neighbors = [self.add_coords(coord, vect) for vect in self.orth_adj_vect()]
-            valid_neighbors = filter(self.is_valid_coordinate, possible_neighbors)
-            valid_nodes = [
-                nodes[self.linearize(coord)] for coord in valid_neighbors
-            ]
-            
-            # old broken line of code
-            #    Node.link(nodes[self.linearize(coord)], *valid_nodes)
+            valid_neighbors_coord = filter(self.is_valid_coordinate, possible_neighbors)
+            valid_nodes = [self.get_node(neighbor_coord) for neighbor_coord in valid_neighbors_coord]
 
-            # temporary bugfix, but it's messy. Ideally, I shouldn't be accessing Node fields directly
-            nodes[self.linearize(coord)].neighbors = valid_nodes
+            self.get_node(coord).neighbors = valid_nodes
 
-        super().__init__(*nodes)
 
 def print_2d_matrix_graph(graph: MatrixGraph):
+    """
+        Takes a MatrixGraph with two dimensions, and formats and prints the values of
+        every member node to std out
+    :param graph:
+    :return:
+    """
+
+    if len(graph.dim) != 2:
+        raise ValueError("MatrixGraph with other than 2 dimensions provided")
+
     for i in range(graph.dim[1]):
         for j in range(graph.dim[0]):
             value = str(graph.get_node([j, i]).value)
