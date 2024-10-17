@@ -52,6 +52,28 @@ class Graph:
     def nodes_by_degree(self) -> list[Node]:
         return sorted(self.nodes.copy(), key=lambda x: len(x.neighbors))
 
+    def filled_adj_nodes(self) -> list[Node]|None:
+        """
+            Gets a list of free nodes that are adjacent to non-free nodes
+
+            If there are no free nodes adjacent to non-free nodes (if the graph is empty/full)
+            returns None
+        """
+
+        unoccupied_node = (node for node in self.nodes if node.value is None or node.value == 0)
+        occupied_adj_node = []
+
+        for node in unoccupied_node:
+            neighbor_values = (neighbor.value for neighbor in node.neighbors if neighbor.value is not None)
+
+            for value in neighbor_values:
+                if value > 0:
+                    occupied_adj_node.append(node)
+
+        if not occupied_adj_node:
+            return None
+        return occupied_adj_node
+
 
 # Defines a graph where the nodes, if they each occupied a space on a
 # two dimensional tessellation of squares (a grid),
