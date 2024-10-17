@@ -40,8 +40,13 @@ class Graph:
     def __init__(self, *nodes: Node):
         self.nodes = list(nodes)
 
-    def print(self):
-        pass
+    def is_empty(self) -> bool:
+        for node in self.nodes:
+            if node.value is not None:
+                if node.value > 0:
+                    return False
+
+        return True
 
 
 # Defines a graph where the nodes, if they each occupied a space on a
