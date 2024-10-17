@@ -48,6 +48,9 @@ class Graph:
 
         return True
 
+    def nodes_by_degree(self) -> list[Node]:
+        return sorted(self.nodes.copy(), key=lambda x: len(x.neighbors))
+
 
 # Defines a graph where the nodes, if they each occupied a space on a
 # two dimensional tessellation of squares (a grid),
