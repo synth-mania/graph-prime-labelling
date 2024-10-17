@@ -107,6 +107,9 @@ class Graph:
                 return False
         return True
 
+    def get_node(self, n: int) -> Node:
+        return self.nodes[n]
+
     def nodes_by_degree(self) -> list[Node]:
         """
             returns a list of the graph's nodes, sorted by degree (number of neighbors)
@@ -221,7 +224,7 @@ class MatrixGraph(Graph):
             stride *= self.dim[i]
         return index
     
-    def get_node(self, coord: list[int]):
+    def get_node_by_coord(self, coord: list[int]):
         """
             Get any node in the graph by coordinate
         :param coord:
@@ -246,9 +249,9 @@ class MatrixGraph(Graph):
 
             possible_neighbors = [self.add_coords(coord, vect) for vect in self.orth_adj_vect()]
             valid_neighbors_coord = filter(self.is_valid_coordinate, possible_neighbors)
-            valid_nodes = [self.get_node(neighbor_coord) for neighbor_coord in valid_neighbors_coord]
+            valid_nodes = [self.get_node_by_coord(neighbor_coord) for neighbor_coord in valid_neighbors_coord]
 
-            self.get_node(coord).neighbors = valid_nodes
+            self.get_node_by_coord(coord).neighbors = valid_nodes
 
 
 def print_2d_matrix_graph(graph: MatrixGraph):
@@ -264,7 +267,7 @@ def print_2d_matrix_graph(graph: MatrixGraph):
 
     for i in range(graph.dim[1]):
         for j in range(graph.dim[0]):
-            value = str(graph.get_node([j, i]).value)
+            value = str(graph.get_node_by_coord([j, i]).value)
             # value = "0" if value is None else str(value) # now, 0 is not treated as None
             print(value + " " * (5 - len(value)), end="")
         print()
