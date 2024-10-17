@@ -108,7 +108,18 @@ class Graph:
         return True
 
     def nodes_by_degree(self) -> list[Node]:
+        """
+            returns a list of the graph's nodes, sorted by degree (number of neighbors)
+        :return:
+        """
         return sorted(self.nodes.copy(), key=lambda x: len(x.neighbors))
+
+    def node_index_by_degree(self) -> list[int]:
+        """
+            return a list of the indexes of the graph's nodes, sorted by degree (number of neighbors)
+        :return:
+        """
+        return sorted(range(self.size), key=lambda x: len(self.nodes[x].neighbors))
 
     def filled_adj_nodes(self) -> list[Node]|None:
         """
