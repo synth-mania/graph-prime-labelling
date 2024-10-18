@@ -4,6 +4,7 @@ class Node:
         self.branch: list["Node"] = []
         self.parent = parent
 
+
     def grow_child(self):
         new_child = Node(parent = self)
         self.branch.append(new_child)
