@@ -213,7 +213,7 @@ class MatrixGraph(Graph):
                     for j in range(i):
                         vect[j] = 0
                     break
-            else:
+            else: # else in a for loop gets executed only if the loop completes without encountering a break
                 # if we complete the loop without a break, all coordinates are exhausted
                 return
 
