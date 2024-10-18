@@ -1,7 +1,7 @@
 from graph import MatrixGraph, Graph, print_2d_matrix_graph, Node
 from copy import deepcopy
 import tree
-from prime_tools import prime_factors, rel_prime
+from prime_tools import prime_factors, coprime
 
 
 class GraphTreeNode(tree.Node):
@@ -63,7 +63,7 @@ def check_graph(g: Graph) -> bool:
         this_node = g.get_node(i)
 
         for neighbor in this_node.neighbors:
-            if not rel_prime(this_node.value, neighbor.value):
+            if not coprime(this_node.value, neighbor.value):
                 return False
     return True
 
@@ -103,7 +103,7 @@ def main():
 
     if labelled_graph is None:
         print("No prime labelling was found")
-    else:new_graph
+    else:
         print_2d_matrix_graph(labelled_graph)
 
 

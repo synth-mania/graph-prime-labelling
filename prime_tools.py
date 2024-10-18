@@ -42,7 +42,7 @@ def prime_factors(x: int) -> list[int]:
     return sorted(l_filtered)
 
 
-def rel_prime(x: int, y: int):
+def coprime(x: int, y: int):
     """
         checks if two integers are relatively prime
 
