@@ -153,6 +153,14 @@ class Graph:
             return None
         return occupied_adj_node
 
+    def print_linked_value(self) -> None:
+        """
+            Print, for each node, it's value, followed by a list of the values of it's neighbors
+        :return:
+        """
+        for node in self.nodes:
+            print(f"{node.get_value()}: ", " ".join(str(x) for x in (i.get_value() for i in node.get_neighbors())))
+
 
 class MatrixGraph(Graph):
     """

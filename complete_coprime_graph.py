@@ -32,8 +32,4 @@ class CompleteCoprimeGraph(Graph):
 if __name__ == "__main__":
     print("complete coprime graph demonstration\n")
     n = int(input("How many nodes in the graph? : "))
-    demo_graph = CompleteCoprimeGraph(n)
-
-    for node in demo_graph.nodes:
-
-        print(f"{node.value}: ", " ".join(str(x) for x in (i.value for i in node.neighbors)))
+    CompleteCoprimeGraph(n).print_linked_value()
