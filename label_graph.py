@@ -52,7 +52,13 @@ def permutate_tree_node(n: GraphTreeNode):
 
 
 # This is a prime spot for optimization (lol)
-def check_graph(g: Graph):
+def check_graph(g: Graph) -> bool:
+    """
+        Takes a Graph as input and returns a boolean value indicating
+        whether the graph has a complete and valid prime labelling
+    :param g:
+    :return:
+    """
     for i in range(g.size):
         this_node = g.get_node(i)
 
@@ -74,7 +80,11 @@ def get_prime_labelling(*dims: int) -> MatrixGraph | None:
     root_graph = MatrixGraph(*dims)
 
     nums = [i + 1 for i in range(len(root_graph.nodes))]
-    # nums = reversed(sorted(nums, key=lambda x: min(prime_factors(x))))  #
+    # I want to sort the nums list by the smallest prime factor
+    # i.e., the last numbers smallest prime factor is bigger than the smallest prime factor of any other number
+    # unfortunately, because 1 is in the prime factor list for everything, it's not gonna be that simple.
+    # I need to sort by the smallest prime factor except 1
+    # nums = reversed(sorted(nums, key=lambda x: min(prime_factors(x))))
     nums_rank = sorted(nums, key=lambda x: len(set(prime_factors(x))))  # less -> more unique prime factors
 
     tree_root = tree.Node(root_graph)
