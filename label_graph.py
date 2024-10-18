@@ -17,37 +17,49 @@ class GraphTreeNode(tree.Node):
     def __init__(self, g: Graph = None, unassigned: list[int] = None, parent: "Node" = None):
         super().__init__({"graph": g, "unassigned": unassigned}, parent)
 
-    def get_graph(self):
+    def set_graph(self, g: Graph):
+        self.value["graph"] = g
+
+    def set_unassigned(self, nums: list[int]):
+        self.value["unassigned"] = nums
+
+    def get_graph(self) -> Graph:
         return self.value["graph"]
 
-    def get_unassigned(self):
-        return self.value["unassigned"]
+    def get_unassigned(self) -> list[int]:
+        return self.value["unassigned"].copy()
 
-def free_adj_space(g: Graph) -> list[int] | None:
-    """
-        Gets a list of indexes of free nodes in a graph that are adjacent to non-free nodes
 
-        If there are no free nodes adjacent to non-free nodes (if the graph is empty/full)
-        returns None
-    """
+def permutate_tree_node(n: GraphTreeNode):
+    graph = n.get_graph()
 
-    unoccupied_i = (i for i in range(len(g.nodes)) if g.nodes[i].value is None or g.nodes[i].value == 0)
-    occupied_adj_i = []
+    # If the graph is empty
+    # take the number with the most unique prime factors, and create a child graph node
+    #
+    if graph.is_empty():
 
-    for i in unoccupied_i:
-        neighbor_values = (neighbor.value for neighbor in g.nodes[i].neighbors if neighbor.value is not None)
+        next_unassigned = n.get_unassigned()
+        next_num = next_unassigned.pop() # .pop() retrieves the number with the most unique prime factors left
 
-        for value in neighbor_values:
-            if value > 0:
-                occupied_adj_i.append(i)
+        for i in graph.node_index_by_degree():
 
-    if not len(occupied_adj_i):
-        return None
-    return occupied_adj_i
+            next_graph = deepcopy(graph)
+            next_graph.get_node(i).set_value(next_num)
 
-# def permutate_tree_node(n: tree.Node, unassigned: list[int]):
-#     if graph_is_empty(n.value):
-#         for i in range(len(n.value.nodes)):
+            child_node = n.grow_child()
+            child_node.set_graph(next_graph)
+            child_node.set_unassigned(next_unassigned.copy())
+
+
+# This is a prime spot for optimization (lol)
+def check_graph(g: Graph):
+    for i in range(g.size):
+        this_node = g.get_node(i)
+
+        for neighbor in this_node.neighbors:
+            if not rel_prime(this_node.value, neighbor.value):
+                return False
+    return True
 
 
 def get_prime_labelling(*dims: int) -> MatrixGraph | None:
@@ -62,11 +74,11 @@ def get_prime_labelling(*dims: int) -> MatrixGraph | None:
     root_graph = MatrixGraph(*dims)
 
     nums = [i + 1 for i in range(len(root_graph.nodes))]
-    nodes_index_rank = sorted(range(len(root_graph.nodes)),
-                              key=lambda x: len(root_graph.nodes[x].neighbors))  # less -> more neighbors
+    # nums = reversed(sorted(nums, key=lambda x: min(prime_factors(x))))  #
     nums_rank = sorted(nums, key=lambda x: len(set(prime_factors(x))))  # less -> more unique prime factors
 
     tree_root = tree.Node(root_graph)
+    tree_root = GraphTreeNode(root_graph, nums_rank)
 
 
 def main():
@@ -77,9 +89,11 @@ def main():
 
     labelled_graph = get_prime_labelling(m, n)
 
+    print("\n")
+
     if labelled_graph is None:
         print("No prime labelling was found")
-    else:
+    else:new_graph
         print_2d_matrix_graph(labelled_graph)
 
 
