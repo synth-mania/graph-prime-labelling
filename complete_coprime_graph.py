@@ -2,6 +2,11 @@ from graph import Graph, Node
 from prime_tools import coprime
 
 class CompleteCoprimeGraph(Graph):
+    """
+        Defines Graph with n nodes labelled 1 through n
+
+        Every node is connected to every other node for which their values are coprime
+    """
     def __init__(self, n: int):
 
         # create n nodes
