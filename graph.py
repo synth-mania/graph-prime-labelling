@@ -1,3 +1,5 @@
+from prime_tools import coprime
+
 class Node:
     """
         Defines the member nodes (verticies) of a Graph
