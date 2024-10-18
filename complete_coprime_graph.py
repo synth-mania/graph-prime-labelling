@@ -17,7 +17,7 @@ class CompleteCoprimeGraph(Graph):
         # link every node to every other node it with which it is coprime
         for i in range(self.size - 1):
             for j in range(i + 1, self.size):
-                print(f"Checking {i+1}, {j+1}", end = "")
+                # print(f"Checking {i+1}, {j+1}")
                 if coprime(i+1, j+1):
 
                     self.get_node(i).neighbors.append(
@@ -27,9 +27,7 @@ class CompleteCoprimeGraph(Graph):
                     self.get_node(j).neighbors.append(
                         self.get_node(i)
                     )
-                    print(" - YES")
-                else:
-                    print()
+
 
 if __name__ == "__main__":
     print("complete coprime graph demonstration\n")
