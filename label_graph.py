@@ -11,7 +11,9 @@ class GraphTreeNode(tree.Node):
         Stores a Graph object and a list of the integers that have not been used to label the graph yet.
 
         new methods:
+
         get_graph() -> Graph
+
         get_unassigned() -> list[int]
     """
     def __init__(self, g: Graph = None, unassigned: list[int] = None, parent: "Node" = None):
@@ -66,6 +68,10 @@ def check_graph(g: Graph) -> bool:
             if not coprime(this_node.value, neighbor.value):
                 return False
     return True
+
+
+def find_graph_dfs(g: Graph) -> Graph | None:
+    pass
 
 
 def get_prime_labelling(*dims: int) -> MatrixGraph | None:
